@@ -1,0 +1,13 @@
+{
+    "name": "kaystrobach/ldap",
+    "type": "typo3-flow-package",
+    "description": "package to handle ldap actions (no authentication, but read and write)",
+    "require": {
+        "typo3/flow": "*"
+    },
+    "autoload": {
+        "psr-0": {
+            "KayStrobach\\Ldap": "Classes"
+        }
+    }
+}
