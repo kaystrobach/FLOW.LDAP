@@ -6,12 +6,17 @@
  * Time: 12:17
  */
 
-namespace KayStrobach\LDAP\Utility;
+namespace KayStrobach\LDAP\Service;
 
 
-use KayStrobach\LDAP\Utility\Exception\OperationException;
+use KayStrobach\LDAP\Service\Exception\OperationException;
 
-class LdapUtility {
+/**
+ * Class Ldap
+ *
+ * @package KayStrobach\LDAP\Service
+ */
+class Ldap {
 	/**
 	 * pointer to the ldap connection
 	 *
@@ -54,6 +59,13 @@ class LdapUtility {
 		$this->checkError('connect');
 		ldap_set_option($this->ldapResource, LDAP_OPT_PROTOCOL_VERSION, 3);
 		$this->checkError('protocol 3');
+	}
+
+	/**
+	 * @return resource
+	 */
+	public function getResource() {
+		return $this->ldapResource;
 	}
 
 	/**
@@ -149,7 +161,7 @@ class LdapUtility {
 	 * @param $message
 	 * @throws OperationException
 	 */
-	protected function checkError($message) {
+	public function checkError($message) {
 		$ldapError = ldap_errno($this->ldapResource);
 		if($ldapError !== 0x00) {
 			$exceptionMessage = 'LDAP error: ' . $message . ': ' . ldap_err2str($ldapError);
@@ -158,6 +170,8 @@ class LdapUtility {
 	}
 
 	/**
+	 * subtree search
+	 *
 	 * @param string $baseDn
 	 * @param string $filter
 	 * @param array $attributes
@@ -165,13 +179,44 @@ class LdapUtility {
 	 * @param int $sizeLimit
 	 * @param int $timeLimit
 	 * @param int $deref
+	 * @return \KayStrobach\LDAP\Service\Ldap\Result
 	 */
 	public function search($baseDn, $filter, $attributes = NULL, $valuesOnly = NULL, $sizeLimit = NULL, $timeLimit = NULL, $deref = NULL) {
 		if(($baseDn === NULL) && ($this->baseDn !== NULL)) {
 			$baseDn = $this->baseDn;
 		}
-		ldap_search($this->ldapResource, $baseDn, $filter, $attributes, $valuesOnly, $sizeLimit, $timeLimit, $deref);
+		$result = ldap_search($this->ldapResource, $baseDn, $filter, $attributes, $valuesOnly, $sizeLimit, $timeLimit, $deref);
 		$this->checkError('seach');
+		return new Ldap\Result($this, $result);
+	}
+
+	/**
+	 * one level search
+	 *
+	 * @param string $baseDn
+	 * @param string $filter
+	 * @param array $attributes
+	 * @param int $valuesOnly
+	 * @param int $sizeLimit
+	 * @param int $timeLimit
+	 * @param int $deref
+	 * @return \KayStrobach\LDAP\Service\Ldap\Result
+	 */
+	public function ls($baseDn, $filter, $attributes = NULL, $valuesOnly = NULL, $sizeLimit = NULL, $timeLimit = NULL, $deref = NULL) {
+		if(($baseDn === NULL) && ($this->baseDn !== NULL)) {
+			$baseDn = $this->baseDn;
+		}
+		$result = ldap_list($this->ldapResource, $baseDn, $filter, $attributes, $valuesOnly, $sizeLimit, $timeLimit, $deref);
+		$this->checkError('ls');
+		return new Ldap\Result($this, $result);
+	}
+
+	/**
+	 * @param $baseDn
+	 * @param $filter
+	 */
+	public function ensureUnique($baseDn, $filter) {
+		$this->search($baseDn, $filter);
 	}
 
 	/**
