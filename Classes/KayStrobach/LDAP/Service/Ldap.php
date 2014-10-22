@@ -10,13 +10,14 @@ namespace KayStrobach\LDAP\Service;
 
 
 use KayStrobach\LDAP\Service\Exception\OperationException;
+use TYPO3\Flow\Annotations as Flow;
 
 /**
  * Class Ldap
  *
  * @package KayStrobach\LDAP\Service
  */
-class Ldap {
+class Ldap implements LdapInterface {
 	/**
 	 * pointer to the ldap connection
 	 *
@@ -39,6 +40,12 @@ class Ldap {
 	protected $baseDn = NULL;
 
 	/**
+	 * @var \TYPO3\Flow\Log\SystemLoggerInterface
+	 * @Flow\Inject
+	 */
+	protected $systemLogger;
+
+	/**
 	 * close connection before destroying the object
 	 */
 	public function __destruct() {
@@ -56,9 +63,25 @@ class Ldap {
 		} else {
 			$this->ldapResource = ldap_connect($dsn);
 		}
+		if($this->ldapResource === FALSE) {
+			throw new OperationException('LDAP Connection failed');
+		}
 		$this->checkError('connect');
 		ldap_set_option($this->ldapResource, LDAP_OPT_PROTOCOL_VERSION, 3);
 		$this->checkError('protocol 3');
+	}
+
+	/**
+	 * @param boolean $alsoCheckBind
+	 * @throws OperationException
+	 */
+	protected function checkConnection($alsoCheckBind = FALSE) {
+		if(!$this->ldapResource) {
+			throw new OperationException('ldap does not seem to be connected');
+		}
+		if($alsoCheckBind && !$this->ldapBindStatus) {
+			throw new OperationException('ldap bind is missing');
+		}
 	}
 
 	/**
@@ -91,6 +114,7 @@ class Ldap {
 	 * @throws OperationException
 	 */
 	public function bind($rdn = NULL, $password = NULL) {
+		$this->checkConnection();
 		if(($rdn !== NULL) && ($password !== NULL)) {
 			$this->ldapBindStatus = ldap_bind($this->ldapResource, $rdn, $password);
 		} else {
@@ -106,9 +130,11 @@ class Ldap {
 	 * @throws OperationException
 	 */
 	public function unbind() {
-		ldap_unbind($this->ldapResource);
-		$this->ldapBindStatus = FALSE;
-		$this->checkError('unbind');
+		if($this->ldapResource) {
+			ldap_unbind($this->ldapResource);
+			$this->ldapBindStatus = FALSE;
+			$this->checkError('unbind');
+		}
 	}
 
 	/**
@@ -119,6 +145,7 @@ class Ldap {
 	 * @throws OperationException
 	 */
 	public function add($dn, $entry) {
+		$this->checkConnection();
 		ldap_add($this->ldapResource, $dn, $entry);
 		$this->checkError('add ' . $dn);
 	}
@@ -135,6 +162,7 @@ class Ldap {
 	 * @param array $entry
 	 */
 	public function modify($dn, $entry) {
+		$this->checkConnection();
 		ldap_modify($this->ldapResource, $dn, $entry);
 		$this->checkError('modify ' . $dn);
 	}
@@ -147,6 +175,7 @@ class Ldap {
 	 * @throws OperationException
 	 */
 	public function modifyBatch($dn, $entry) {
+		$this->checkConnection();
 		if(function_exists('ldap_modify_batch')) {
 			ldap_modify_batch($this->ldapResource, $dn, $entry);
 			$this->checkError('modify batch ' . $dn);
@@ -167,6 +196,7 @@ class Ldap {
 			$exceptionMessage = 'LDAP error: ' . $message . ': ' . ldap_err2str($ldapError);
 			throw new OperationException($exceptionMessage, $ldapError);
 		}
+		$this->systemLogger->log('LDAP-OK: ' . $message, LOG_DEBUG);
 	}
 
 	/**
@@ -181,7 +211,8 @@ class Ldap {
 	 * @param int $deref
 	 * @return \KayStrobach\LDAP\Service\Ldap\Result
 	 */
-	public function search($baseDn, $filter, $attributes = NULL, $valuesOnly = NULL, $sizeLimit = NULL, $timeLimit = NULL, $deref = NULL) {
+	public function search($baseDn = NULL, $filter = '', $attributes = array(), $valuesOnly = NULL, $sizeLimit = NULL, $timeLimit = NULL, $deref = NULL) {
+		$this->checkConnection();
 		if(($baseDn === NULL) && ($this->baseDn !== NULL)) {
 			$baseDn = $this->baseDn;
 		}
@@ -203,6 +234,7 @@ class Ldap {
 	 * @return \KayStrobach\LDAP\Service\Ldap\Result
 	 */
 	public function ls($baseDn, $filter, $attributes = NULL, $valuesOnly = NULL, $sizeLimit = NULL, $timeLimit = NULL, $deref = NULL) {
+		$this->checkConnection();
 		if(($baseDn === NULL) && ($this->baseDn !== NULL)) {
 			$baseDn = $this->baseDn;
 		}
@@ -216,6 +248,7 @@ class Ldap {
 	 * @param $filter
 	 */
 	public function ensureUnique($baseDn, $filter) {
+		$this->checkConnection();
 		$this->search($baseDn, $filter);
 	}
 
@@ -227,14 +260,8 @@ class Ldap {
 	 * @internal param $ldapConnection
 	 * @return int
 	 */
-	public function getNextUidNumber($dn, $argument = 'uidNumber') {
-		$erg = ldap_search(
-			$this->ldapResource,
-			$dn,
-			$argument . '=*',
-			array($argument)
-		);
-		ldap_sort($this->ldapResource, $erg, 'uidNumber' );
+	public function getNextUidNumber($dn = NULL, $argument = 'uidNumber') {
+		$erg = $this->search($dn, $argument . '=*', array($argument));
 		$entries = ldap_get_entries($this->ldapResource, $erg);
 		$entry = 0;
 		foreach($entries as $currentEntry) {
