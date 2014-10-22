@@ -6,16 +6,16 @@
  * Time: 12:17
  */
 
-namespace KayStrobach\LDAP\Service;
+namespace KayStrobach\Ldap\Service;
 
 
-use KayStrobach\LDAP\Service\Exception\OperationException;
+use KayStrobach\Ldap\Service\Exception\OperationException;
 use TYPO3\Flow\Annotations as Flow;
 
 /**
  * Class Ldap
  *
- * @package KayStrobach\LDAP\Service
+ * @package KayStrobach\Ldap\Service
  */
 class Ldap implements LdapInterface {
 	/**
@@ -133,7 +133,6 @@ class Ldap implements LdapInterface {
 		if($this->ldapResource) {
 			ldap_unbind($this->ldapResource);
 			$this->ldapBindStatus = FALSE;
-			$this->checkError('unbind');
 		}
 	}
 
@@ -209,14 +208,14 @@ class Ldap implements LdapInterface {
 	 * @param int $sizeLimit
 	 * @param int $timeLimit
 	 * @param int $deref
-	 * @return \KayStrobach\LDAP\Service\Ldap\Result
+	 * @return \KayStrobach\Ldap\Service\Ldap\Result
 	 */
-	public function search($baseDn = NULL, $filter = '', $attributes = array(), $valuesOnly = NULL, $sizeLimit = NULL, $timeLimit = NULL, $deref = NULL) {
+	public function search($baseDn = NULL, $filter = '(objectClass=*)', $attributes = array('uid', 'dn', 'dn'), $valuesOnly = 0, $sizeLimit = NULL, $timeLimit = NULL, $deref = NULL) {
 		$this->checkConnection();
 		if(($baseDn === NULL) && ($this->baseDn !== NULL)) {
 			$baseDn = $this->baseDn;
 		}
-		$result = ldap_search($this->ldapResource, $baseDn, $filter, $attributes, $valuesOnly, $sizeLimit, $timeLimit, $deref);
+		$result = @ldap_search($this->ldapResource, $baseDn, $filter, $attributes, $valuesOnly, $sizeLimit, $timeLimit, $deref);
 		$this->checkError('seach');
 		return new Ldap\Result($this, $result);
 	}
@@ -231,14 +230,14 @@ class Ldap implements LdapInterface {
 	 * @param int $sizeLimit
 	 * @param int $timeLimit
 	 * @param int $deref
-	 * @return \KayStrobach\LDAP\Service\Ldap\Result
+	 * @return \KayStrobach\Ldap\Service\Ldap\Result
 	 */
-	public function ls($baseDn, $filter, $attributes = NULL, $valuesOnly = NULL, $sizeLimit = NULL, $timeLimit = NULL, $deref = NULL) {
+	public function ls($baseDn = NULL, $filter = '(objectClass=*)', $attributes = array('uid', 'dn', 'dn'), $valuesOnly = 0, $sizeLimit = NULL, $timeLimit = NULL, $deref = NULL) {
 		$this->checkConnection();
 		if(($baseDn === NULL) && ($this->baseDn !== NULL)) {
 			$baseDn = $this->baseDn;
 		}
-		$result = ldap_list($this->ldapResource, $baseDn, $filter, $attributes, $valuesOnly, $sizeLimit, $timeLimit, $deref);
+		$result = @ldap_list($this->ldapResource, $baseDn, $filter, $attributes, $valuesOnly, $sizeLimit, $timeLimit, $deref);
 		$this->checkError('ls');
 		return new Ldap\Result($this, $result);
 	}

@@ -5,15 +5,15 @@
  * Date: 22.10.14
  * Time: 17:52
  */
-namespace KayStrobach\LDAP\Service;
+namespace KayStrobach\Ldap\Service;
 
-use KayStrobach\LDAP\Service\Exception\OperationException;
+use KayStrobach\Ldap\Service\Exception\OperationException;
 
 
 /**
  * Class Ldap
  *
- * @package KayStrobach\LDAP\Service
+ * @package KayStrobach\Ldap\Service
  */
 interface LdapInterface
 {
@@ -102,9 +102,9 @@ interface LdapInterface
 	 * @param int $sizeLimit
 	 * @param int $timeLimit
 	 * @param int $deref
-	 * @return \KayStrobach\LDAP\Service\Ldap\Result
+	 * @return \KayStrobach\Ldap\Service\Ldap\Result
 	 */
-	public function search($baseDn = NULL, $filter = '', $attributes = array(), $valuesOnly = NULL, $sizeLimit = NULL, $timeLimit = NULL, $deref = NULL);
+	public function search($baseDn = NULL, $filter = '(objectClass=*)', $attributes = array(), $valuesOnly = 0, $sizeLimit = NULL, $timeLimit = NULL, $deref = NULL);
 
 	/**
 	 * one level search
@@ -116,9 +116,9 @@ interface LdapInterface
 	 * @param int $sizeLimit
 	 * @param int $timeLimit
 	 * @param int $deref
-	 * @return \KayStrobach\LDAP\Service\Ldap\Result
+	 * @return \KayStrobach\Ldap\Service\Ldap\Result
 	 */
-	public function ls($baseDn, $filter, $attributes = NULL, $valuesOnly = NULL, $sizeLimit = NULL, $timeLimit = NULL, $deref = NULL);
+	public function ls($baseDn = NULL, $filter = '(objectClass=*)', $attributes = array(), $valuesOnly = 0, $sizeLimit = NULL, $timeLimit = NULL, $deref = NULL);
 
 	/**
 	 * @param $baseDn

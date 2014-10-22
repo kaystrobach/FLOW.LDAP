@@ -6,18 +6,18 @@
  * Time: 14:57
  */
 
-namespace KayStrobach\LDAP\Service\Ldap;
+namespace KayStrobach\Ldap\Service\Ldap;
 
 /**
  * Class LdapEntry
  *
- * @package KayStrobach\LDAP\Service
+ * @package KayStrobach\Ldap\Service
  */
 class Entry {
 	/**
 	 * pointer to the ldap connection
 	 *
-	 * @var \KayStrobach\LDAP\Service\Ldap
+	 * @var \KayStrobach\Ldap\Service\Ldap
 	 */
 	protected $ldapConnection;
 
@@ -32,7 +32,7 @@ class Entry {
 	protected $entryAsResource = FALSE;
 
 	/**
-	 * @param \KayStrobach\LDAP\Service\Ldap $ldapConnection
+	 * @param \KayStrobach\Ldap\Service\Ldap $ldapConnection
 	 * @param resource $ldapResult
 	 * @param array $entryArray
 	 */
@@ -46,7 +46,7 @@ class Entry {
 
 	/**
 	 * @return array|null
-	 * @throws \KayStrobach\LDAP\Service\Exception\OperationException
+	 * @throws \KayStrobach\Ldap\Service\Exception\OperationException
 	 */
 	public function getAsArray() {
 		if($this->entryAsArray === NULL) {
@@ -58,7 +58,7 @@ class Entry {
 
 	/**
 	 * @return string
-	 * @throws \KayStrobach\LDAP\Service\Exception\OperationException
+	 * @throws \KayStrobach\Ldap\Service\Exception\OperationException
 	 */
 	public function getDn() {
 		$dn = ldap_get_dn($this->ldapConnection->getResource(), $this->entryAsResource);
@@ -69,7 +69,7 @@ class Entry {
 	/**
 	 * @param string $name
 	 * @return array
-	 * @throws \KayStrobach\LDAP\Service\Exception\OperationException
+	 * @throws \KayStrobach\Ldap\Service\Exception\OperationException
 	 */
 	public function getValues($name) {
 		$values = ldap_get_values($this->ldapConnection->getResource(), $this->entryAsResource, $name);
@@ -80,7 +80,7 @@ class Entry {
 	/**
 	 * @param array $data
 	 * @return bool
-	 * @throws \KayStrobach\LDAP\Service\Exception\OperationException
+	 * @throws \KayStrobach\Ldap\Service\Exception\OperationException
 	 */
 	public function modify($data) {
 		$dn = $this->getDn();

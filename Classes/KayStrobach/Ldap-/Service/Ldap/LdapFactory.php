@@ -6,16 +6,14 @@
  * Time: 15:51
  */
 
-namespace KayStrobach\LDAP\Service\Ldap;
+namespace KayStrobach\Ldap\Service\Ldap;
 
-use KayStrobach\LDAP\Service\Exception\OperationException;
-use KayStrobach\LDAP\Service\Ldap;
+use KayStrobach\Ldap\Service\Ldap;
 use TYPO3\Flow\Annotations as Flow;
-use TYPO3\Flow\Error\Message;
 
 /**
  * Class Factory
- * @package KayStrobach\LDAP\Service\Ldap
+ * @package KayStrobach\Ldap\Service\Ldap
  *
  * @Flow\Scope("singleton")
  */
@@ -24,7 +22,7 @@ class LdapFactory {
 	 * @param string $identifier
 	 * @param string $ldapObjectName
 	 * @param array $settings
-	 * @return \KayStrobach\LDAP\Service\LdapInterface
+	 * @return \KayStrobach\Ldap\Service\LdapInterface
 	 */
 	public static function create($identifier, $ldapObjectName, $settings) {
 		$ldap = new $ldapObjectName();

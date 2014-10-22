@@ -1,13 +1,11 @@
-
-
 KayStrobach\Ldap\Service\LdapInterface:
   scope: singleton
-  factoryObjectName: KayStrobach\LDAP\Service\Ldap\LdapFactory
+  factoryObjectName: KayStrobach\Ldap\Service\Ldap\LdapFactory
   factoryMethodName: create
   arguments:
     1:
       value: 'Flow_System'
     2:
-      value: 'KayStrobach\LDAP\Service\Ldap'
+      value: 'KayStrobach\Ldap\Service\Ldap'
     3:
       setting: TYPO3.Flow.security.authentication.providers.DefaultProvider.providerOptions

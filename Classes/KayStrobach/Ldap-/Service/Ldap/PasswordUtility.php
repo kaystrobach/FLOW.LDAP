@@ -6,12 +6,12 @@
  * Time: 15:21
  */
 
-namespace KayStrobach\LDAP\Service\Ldap;
+namespace KayStrobach\Ldap\Service\Ldap;
 
 /**
  * Class PasswordUtility
  *
- * @package KayStrobach\LDAP\Service\Ldap
+ * @package KayStrobach\Ldap\Service\Ldap
  */
 class PasswordUtility {
 	/**

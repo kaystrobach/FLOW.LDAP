@@ -6,7 +6,7 @@
  * Time: 12:43
  */
 
-namespace KayStrobach\LDAP\Service\Exception;
+namespace KayStrobach\Ldap\Service\Exception;
 
 
 class OperationException extends \Exception {

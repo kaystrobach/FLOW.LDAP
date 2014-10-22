@@ -6,21 +6,21 @@
  * Time: 16:30
  */
 
-namespace KayStrobach\LDAP\Service\Ldap;
-use KayStrobach\LDAP\Service\Exception\OperationException;
+namespace KayStrobach\Ldap\Service\Ldap;
+use KayStrobach\Ldap\Service\Exception\OperationException;
 
 /**
  * Class LdapResult
  *
  * has all the ldap handling build in
  *
- * @package KayStrobach\LDAP\Service
+ * @package KayStrobach\Ldap\Service
  */
 class Result implements \Iterator{
 	/**
 	 * pointer to the ldap connection
 	 *
-	 * @var \KayStrobach\LDAP\Service\Ldap
+	 * @var \KayStrobach\Ldap\Service\Ldap
 	 */
 	protected $ldapConnection;
 
@@ -60,14 +60,6 @@ class Result implements \Iterator{
 	}
 
 	/**
-	 * cleanup
-	 */
-	public function __destruct() {
-		ldap_free_result($this->ldapResult);
-		$this->ldapConnection->checkError('free result');
-	}
-
-	/**
 	 * @param $field
 	 * @throws OperationException
 	 */
@@ -86,6 +78,8 @@ class Result implements \Iterator{
 	public function getAllEntriesAsArray() {
 		$entries = ldap_get_entries($this->ldapConnection->getResource(), $this->ldapResult);
 		$this->ldapConnection->checkError('getAllEntries');
+		// remove the index 0, as it just contains the count
+		array_shift($entries);
 		return $entries;
 	}
 
