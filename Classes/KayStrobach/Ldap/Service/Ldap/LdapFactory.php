@@ -21,15 +21,17 @@ class LdapFactory {
 	/**
 	 * @param string $identifier
 	 * @param string $ldapObjectName
-	 * @param array $settings
+	 * @param array $authSettings
 	 * @return \KayStrobach\Ldap\Service\LdapInterface
 	 */
-	public static function create($identifier, $ldapObjectName, $settings) {
+	public static function create($identifier, $ldapObjectName, $authSettings, $settings) {
+		/** @var \KayStrobach\Ldap\Service\LdapInterface $ldap */
 		$ldap = new $ldapObjectName();
-		$ldap->connect($settings['host'], $settings['port']);
-		$ldap->setBaseDn($settings['baseDn']);
-		if(!$settings['bind']['anonymous']) {
-			$ldap->bind($settings['bind']['dn'], $settings['bind']['password']);
+		$ldap->connect($authSettings['host'], $authSettings['port']);
+		$ldap->setBaseDn($authSettings['baseDn']);
+		$ldap->configure($settings);
+		if(!$authSettings['bind']['anonymous']) {
+			$ldap->bind($authSettings['bind']['dn'], $authSettings['bind']['password']);
 		}
 		return $ldap;
 	}

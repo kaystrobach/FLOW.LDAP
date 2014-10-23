@@ -87,7 +87,7 @@ class Result implements \Iterator{
 	 * (PHP 5 &gt;= 5.0.0)<br/>
 	 * Return the current element
 	 * @link http://php.net/manual/en/iterator.current.php
-	 * @return mixed Can return any type.
+	 * @return Entry Can return any type.
 	 */
 	public function current() {
 		if($this->entryAsResource !== NULL) {

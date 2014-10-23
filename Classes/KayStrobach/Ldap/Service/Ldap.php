@@ -17,7 +17,8 @@ use TYPO3\Flow\Annotations as Flow;
  *
  * @package KayStrobach\Ldap\Service
  */
-class Ldap implements LdapInterface {
+class Ldap implements LdapInterface
+{
 	/**
 	 * pointer to the ldap connection
 	 *
@@ -44,6 +45,11 @@ class Ldap implements LdapInterface {
 	 * @Flow\Inject
 	 */
 	protected $systemLogger;
+
+	/**
+	 * @var array
+	 */
+	protected $settings = array();
 
 	/**
 	 * close connection before destroying the object
@@ -85,24 +91,17 @@ class Ldap implements LdapInterface {
 	}
 
 	/**
-	 * @return resource
+	 * @param array $settings
 	 */
-	public function getResource() {
-		return $this->ldapResource;
+	public function configure($settings) {
+		$this->settings = $settings;
 	}
 
 	/**
-	 * @return string
+	 * make bind as preconfigured admin
 	 */
-	public function getBaseDn() {
-		return $this->baseDn;
-	}
-
-	/**
-	 * @param string $baseDn
-	 */
-	public function setBaseDn($baseDn) {
-		$this->baseDn = $baseDn;
+	public function bindAsAdmin() {
+		return $this->bind($this->settings['admin']['dn'], $this->settings['admin']['password']);
 	}
 
 	/**
@@ -134,6 +133,27 @@ class Ldap implements LdapInterface {
 			ldap_unbind($this->ldapResource);
 			$this->ldapBindStatus = FALSE;
 		}
+	}
+
+	/**
+	 * @return resource
+	 */
+	public function getResource() {
+		return $this->ldapResource;
+	}
+
+	/**
+	 * @return string
+	 */
+	public function getBaseDn() {
+		return $this->baseDn;
+	}
+
+	/**
+	 * @param string $baseDn
+	 */
+	public function setBaseDn($baseDn) {
+		$this->baseDn = $baseDn;
 	}
 
 	/**

@@ -2,8 +2,8 @@
 /**
  * Created by PhpStorm.
  * User: kay
- * Date: 22.10.14
- * Time: 17:52
+ * Date: 23.10.14
+ * Time: 07:30
  */
 namespace KayStrobach\Ldap\Service;
 
@@ -25,19 +25,14 @@ interface LdapInterface
 	public function connect($dsn, $port = NULL);
 
 	/**
-	 * @return resource
+	 * @param array $settings
 	 */
-	public function getResource();
+	public function configure($settings);
 
 	/**
-	 * @return string
+	 * make bind as preconfigured admin
 	 */
-	public function getBaseDn();
-
-	/**
-	 * @param string $baseDn
-	 */
-	public function setBaseDn($baseDn);
+	public function bindAsAdmin();
 
 	/**
 	 * do an ldap bind, if both parameters are empty, anonymous bind is tried
@@ -55,6 +50,21 @@ interface LdapInterface
 	 * @throws OperationException
 	 */
 	public function unbind();
+
+	/**
+	 * @return resource
+	 */
+	public function getResource();
+
+	/**
+	 * @return string
+	 */
+	public function getBaseDn();
+
+	/**
+	 * @param string $baseDn
+	 */
+	public function setBaseDn($baseDn);
 
 	/**
 	 * Adds a new Object
@@ -104,7 +114,7 @@ interface LdapInterface
 	 * @param int $deref
 	 * @return \KayStrobach\Ldap\Service\Ldap\Result
 	 */
-	public function search($baseDn = NULL, $filter = '(objectClass=*)', $attributes = array(), $valuesOnly = 0, $sizeLimit = NULL, $timeLimit = NULL, $deref = NULL);
+	public function search($baseDn = NULL, $filter = '(objectClass=*)', $attributes = array('uid', 'dn', 'dn'), $valuesOnly = 0, $sizeLimit = NULL, $timeLimit = NULL, $deref = NULL);
 
 	/**
 	 * one level search
@@ -118,7 +128,7 @@ interface LdapInterface
 	 * @param int $deref
 	 * @return \KayStrobach\Ldap\Service\Ldap\Result
 	 */
-	public function ls($baseDn = NULL, $filter = '(objectClass=*)', $attributes = array(), $valuesOnly = 0, $sizeLimit = NULL, $timeLimit = NULL, $deref = NULL);
+	public function ls($baseDn = NULL, $filter = '(objectClass=*)', $attributes = array('uid', 'dn', 'dn'), $valuesOnly = 0, $sizeLimit = NULL, $timeLimit = NULL, $deref = NULL);
 
 	/**
 	 * @param $baseDn

@@ -9,3 +9,5 @@ KayStrobach\Ldap\Service\LdapInterface:
       value: 'KayStrobach\Ldap\Service\Ldap'
     3:
       setting: TYPO3.Flow.security.authentication.providers.DefaultProvider.providerOptions
+    4:
+      setting: KayStrobach.Ldap
