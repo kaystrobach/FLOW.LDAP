@@ -1,0 +1,7 @@
+KayStrobach:
+  Ldap:
+    host:
+    port:
+    admin:
+      dn:
+      password:
