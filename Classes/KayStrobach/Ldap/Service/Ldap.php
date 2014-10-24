@@ -269,7 +269,7 @@ class Ldap implements LdapInterface
 	 * @return \KayStrobach\Ldap\Service\Ldap\Entry|null
 	 */
 	public function getOneObjectByUid($uid, $silentFail = TRUE) {
-		$attributes = array('uid', 'dn', 'dn', 'givenname', 'sn', 'mail', 'uidnumber', 'employeetype');
+		$attributes = array('uid', 'dn', 'dn', 'givenname', 'sn', 'mail', 'uidnumber', 'employeetype', 'ou', 'displayName');
 		try {
 			$accounts = $this->search(NULL, '(uid=' . $uid . ')', $attributes);
 			$count = $accounts->count();

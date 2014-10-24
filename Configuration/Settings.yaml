@@ -5,3 +5,11 @@ KayStrobach:
     admin:
       dn:
       password:
+    defaults:
+      attributes:
+        - givenName
+        - sn
+        - uidNumber
+        - employeeType
+        - mail
+        - ou
