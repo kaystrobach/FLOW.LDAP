@@ -131,6 +131,14 @@ interface LdapInterface
 	public function ls($baseDn = NULL, $filter = '(objectClass=*)', $attributes = array('uid', 'dn', 'dn'), $valuesOnly = 0, $sizeLimit = NULL, $timeLimit = NULL, $deref = NULL);
 
 	/**
+	 * @param string $uid
+	 * @param bool $silentFail
+	 * @throws OperationException
+	 * @return \KayStrobach\Ldap\Service\Ldap\Entry|null
+	 */
+	public function getOneObjectByUid($uid, $silentFail = TRUE);
+
+	/**
 	 * @param $baseDn
 	 * @param $filter
 	 */

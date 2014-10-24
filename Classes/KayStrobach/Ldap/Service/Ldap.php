@@ -263,6 +263,31 @@ class Ldap implements LdapInterface
 	}
 
 	/**
+	 * @param string $uid
+	 * @param bool $silentFail
+	 * @throws OperationException
+	 * @return \KayStrobach\Ldap\Service\Ldap\Entry|null
+	 */
+	public function getOneObjectByUid($uid, $silentFail = TRUE) {
+		$attributes = array('uid', 'dn', 'dn', 'givenname', 'sn', 'mail', 'uidnumber', 'employeetype');
+		try {
+			$accounts = $this->search(NULL, '(uid=' . $uid . ')', $attributes);
+			$count = $accounts->count();
+			if ($count === 1) {
+				$accounts->next();
+				return $accounts->current();
+			} elseif ($count > 1) {
+				if (!$silentFail) {
+					throw new OperationException('Search with uid does not gave a unique result, should not happen if your tree is intact.', 1414139472);
+				}
+			}
+		} catch(\Exception $e) {
+			// do nothing
+		}
+		return NULL;
+	}
+
+	/**
 	 * @param $baseDn
 	 * @param $filter
 	 */
