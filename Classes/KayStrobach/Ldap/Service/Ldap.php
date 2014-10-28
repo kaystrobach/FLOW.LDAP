@@ -129,7 +129,7 @@ class Ldap implements LdapInterface
 	 * @throws OperationException
 	 */
 	public function unbind() {
-		if($this->ldapResource) {
+		if(($this->ldapResource) && ($this->ldapBindStatus !== FALSE)) {
 			ldap_unbind($this->ldapResource);
 			$this->ldapBindStatus = FALSE;
 		}
