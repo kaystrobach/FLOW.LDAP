@@ -132,7 +132,7 @@ class Result implements \Iterator{
 	 * Returns true on success or false on failure.
 	 */
 	public function valid() {
-		if($this->entryAsResource !== FALSE) {
+		if(is_resource($this->entryAsResource)) {
 			return TRUE;
 		} else {
 			return FALSE;
