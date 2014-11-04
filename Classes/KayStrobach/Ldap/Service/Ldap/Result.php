@@ -64,7 +64,7 @@ class Result implements \Iterator{
 	 * @throws OperationException
 	 */
 	public function sort($field) {
-		if($this->position !== 0) {
+		if($this->position === 0) {
 			ldap_sort($this->ldapConnection->getResource(), $this->ldapResult, $field);
 			$this->ldapConnection->checkError('sort');
 		} else {
