@@ -250,10 +250,13 @@ class Ldap implements LdapInterface
 	 * @param int $deref
 	 * @return \KayStrobach\Ldap\Service\Ldap\Result
 	 */
-	public function search($baseDn = NULL, $filter = '(objectClass=*)', $attributes = array('uid', 'dn'), $valuesOnly = 0, $sizeLimit = NULL, $timeLimit = NULL, $deref = NULL) {
+	public function search($baseDn = NULL, $filter = '(objectClass=*)', $attributes = NULL, $valuesOnly = 0, $sizeLimit = NULL, $timeLimit = NULL, $deref = NULL) {
 		$this->checkConnection();
 		if(($baseDn === NULL) && ($this->baseDn !== NULL)) {
 			$baseDn = $this->baseDn;
+		}
+		if($attributes === NULL) {
+			$attributes = $this->getDefaultAttributes();
 		}
 		$result = @ldap_search($this->ldapResource, $baseDn, $filter, $attributes, $valuesOnly, $sizeLimit, $timeLimit, $deref);
 		$this->checkError('seach');
@@ -272,10 +275,13 @@ class Ldap implements LdapInterface
 	 * @param int $deref
 	 * @return \KayStrobach\Ldap\Service\Ldap\Result
 	 */
-	public function ls($baseDn = NULL, $filter = '(objectClass=*)', $attributes = array('uid', 'dn'), $valuesOnly = 0, $sizeLimit = NULL, $timeLimit = NULL, $deref = NULL) {
+	public function ls($baseDn = NULL, $filter = '(objectClass=*)', $attributes = NULL, $valuesOnly = 0, $sizeLimit = NULL, $timeLimit = NULL, $deref = NULL) {
 		$this->checkConnection();
 		if(($baseDn === NULL) && ($this->baseDn !== NULL)) {
 			$baseDn = $this->baseDn;
+		}
+		if($attributes === NULL) {
+			$attributes = $this->getDefaultAttributes();
 		}
 		$result = @ldap_list($this->ldapResource, $baseDn, $filter, $attributes, $valuesOnly, $sizeLimit, $timeLimit, $deref);
 		$this->checkError('ls');
@@ -290,9 +296,8 @@ class Ldap implements LdapInterface
 	 * @return \KayStrobach\Ldap\Service\Ldap\Entry|null
 	 */
 	public function getOneObjectByField($value, $field = 'uid', $silentFail = TRUE) {
-		$attributes = array('uid', 'dn', 'dn', 'givenname', 'sn', 'mail', 'uidnumber', 'employeetype', 'ou', 'displayName');
 		try {
-			$accounts = $this->search(NULL, '(' . $field . '=' . $value . ')', $attributes);
+			$accounts = $this->search(NULL, '(' . $field . '=' . $value . ')', $this->getDefaultAttributes());
 			$count = $accounts->count();
 			if ($count === 1) {
 				$accounts->next();
