@@ -263,15 +263,16 @@ class Ldap implements LdapInterface
 	}
 
 	/**
-	 * @param string $uid
+	 * @param string $value
+	 * @param string $field
 	 * @param bool $silentFail
 	 * @throws OperationException
 	 * @return \KayStrobach\Ldap\Service\Ldap\Entry|null
 	 */
-	public function getOneObjectByUid($uid, $silentFail = TRUE) {
+	public function getOneObjectByField($value, $field = 'uid', $silentFail = TRUE) {
 		$attributes = array('uid', 'dn', 'dn', 'givenname', 'sn', 'mail', 'uidnumber', 'employeetype', 'ou', 'displayName');
 		try {
-			$accounts = $this->search(NULL, '(uid=' . $uid . ')', $attributes);
+			$accounts = $this->search(NULL, '(' . $field . '=' . $value . ')', $attributes);
 			$count = $accounts->count();
 			if ($count === 1) {
 				$accounts->next();
@@ -285,15 +286,6 @@ class Ldap implements LdapInterface
 			// do nothing
 		}
 		return NULL;
-	}
-
-	/**
-	 * @param $baseDn
-	 * @param $filter
-	 */
-	public function ensureUnique($baseDn, $filter) {
-		$this->checkConnection();
-		$this->search($baseDn, $filter);
 	}
 
 	/**
