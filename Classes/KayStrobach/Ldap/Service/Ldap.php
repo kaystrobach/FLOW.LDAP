@@ -10,6 +10,7 @@ namespace KayStrobach\Ldap\Service;
 
 
 use KayStrobach\Ldap\Service\Exception\OperationException;
+use KayStrobach\Ldap\Utility\EscapeUtility;
 use TYPO3\Flow\Annotations as Flow;
 
 /**
@@ -297,7 +298,7 @@ class Ldap implements LdapInterface
 	 */
 	public function getOneObjectByField($value, $field = 'uid', $silentFail = TRUE) {
 		try {
-			$accounts = $this->search(NULL, '(' . $field . '=' . $value . ')', $this->getDefaultAttributes());
+			$accounts = $this->search(NULL, '(' . $field . '=' . EscapeUtility::escape($value) . ')', $this->getDefaultAttributes());
 			$count = $accounts->count();
 			if ($count === 1) {
 				$accounts->next();
