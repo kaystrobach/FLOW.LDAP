@@ -71,10 +71,13 @@ class Entry {
 	 * @return array
 	 * @throws \KayStrobach\Ldap\Service\Exception\OperationException
 	 */
-	public function getValues($name) {
-		$values = ldap_get_values($this->ldapConnection->getResource(), $this->entryAsResource, $name);
-		$this->ldapConnection->checkError('getValues' . $name);
-		return $values;
+	public function getValues($name = NULL) {
+		if($name !== NULL) {
+			$values = ldap_get_values($this->ldapConnection->getResource(), $this->entryAsResource, $name);
+			$this->ldapConnection->checkError('getValues' . $name);
+			return $values;
+		}
+		return NULL;
 	}
 
 	/**
