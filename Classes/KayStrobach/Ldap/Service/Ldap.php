@@ -52,6 +52,12 @@ class Ldap implements LdapInterface
 	protected $settings = array();
 
 	/**
+	 * contains a list of attributes, normally used for fetching data
+	 * @var array
+	 */
+	protected $defaultAttributes = array('uid', 'dn');
+
+	/**
 	 * close connection before destroying the object
 	 */
 	public function __destruct() {
@@ -75,6 +81,20 @@ class Ldap implements LdapInterface
 		$this->checkError('connect');
 		ldap_set_option($this->ldapResource, LDAP_OPT_PROTOCOL_VERSION, 3);
 		$this->checkError('protocol 3');
+	}
+
+	/**
+	 * @param array $attributes
+	 */
+	public function setDefaultAttributes($attributes) {
+		$this->defaultAttributes = $attributes;
+	}
+
+	/**
+	 * @return array
+	 */
+	public function getDefaultAttributes() {
+		return $this->defaultAttributes;
 	}
 
 	/**
@@ -230,7 +250,7 @@ class Ldap implements LdapInterface
 	 * @param int $deref
 	 * @return \KayStrobach\Ldap\Service\Ldap\Result
 	 */
-	public function search($baseDn = NULL, $filter = '(objectClass=*)', $attributes = array('uid', 'dn', 'dn'), $valuesOnly = 0, $sizeLimit = NULL, $timeLimit = NULL, $deref = NULL) {
+	public function search($baseDn = NULL, $filter = '(objectClass=*)', $attributes = array('uid', 'dn'), $valuesOnly = 0, $sizeLimit = NULL, $timeLimit = NULL, $deref = NULL) {
 		$this->checkConnection();
 		if(($baseDn === NULL) && ($this->baseDn !== NULL)) {
 			$baseDn = $this->baseDn;
@@ -252,7 +272,7 @@ class Ldap implements LdapInterface
 	 * @param int $deref
 	 * @return \KayStrobach\Ldap\Service\Ldap\Result
 	 */
-	public function ls($baseDn = NULL, $filter = '(objectClass=*)', $attributes = array('uid', 'dn', 'dn'), $valuesOnly = 0, $sizeLimit = NULL, $timeLimit = NULL, $deref = NULL) {
+	public function ls($baseDn = NULL, $filter = '(objectClass=*)', $attributes = array('uid', 'dn'), $valuesOnly = 0, $sizeLimit = NULL, $timeLimit = NULL, $deref = NULL) {
 		$this->checkConnection();
 		if(($baseDn === NULL) && ($this->baseDn !== NULL)) {
 			$baseDn = $this->baseDn;

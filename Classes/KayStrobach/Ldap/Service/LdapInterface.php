@@ -30,6 +30,16 @@ interface LdapInterface
 	public function configure($settings);
 
 	/**
+	 * @param array $attributes
+	 */
+	public function setDefaultAttributes($attributes);
+
+	/**
+	 * @return array
+	 */
+	public function getDefaultAttributes();
+
+	/**
 	 * make bind as preconfigured admin
 	 */
 	public function bindAsAdmin();
@@ -114,7 +124,7 @@ interface LdapInterface
 	 * @param int $deref
 	 * @return \KayStrobach\Ldap\Service\Ldap\Result
 	 */
-	public function search($baseDn = NULL, $filter = '(objectClass=*)', $attributes = array('uid', 'dn', 'dn'), $valuesOnly = 0, $sizeLimit = NULL, $timeLimit = NULL, $deref = NULL);
+	public function search($baseDn = NULL, $filter = '(objectClass=*)', $attributes = array('uid', 'dn'), $valuesOnly = 0, $sizeLimit = NULL, $timeLimit = NULL, $deref = NULL);
 
 	/**
 	 * one level search
@@ -128,7 +138,7 @@ interface LdapInterface
 	 * @param int $deref
 	 * @return \KayStrobach\Ldap\Service\Ldap\Result
 	 */
-	public function ls($baseDn = NULL, $filter = '(objectClass=*)', $attributes = array('uid', 'dn', 'dn'), $valuesOnly = 0, $sizeLimit = NULL, $timeLimit = NULL, $deref = NULL);
+	public function ls($baseDn = NULL, $filter = '(objectClass=*)', $attributes = array('uid', 'dn'), $valuesOnly = 0, $sizeLimit = NULL, $timeLimit = NULL, $deref = NULL);
 
 	/**
 	 * @param string $value

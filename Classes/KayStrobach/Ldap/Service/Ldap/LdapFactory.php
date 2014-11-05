@@ -30,9 +30,26 @@ class LdapFactory {
 		$ldap->connect($authSettings['host'], $authSettings['port']);
 		$ldap->setBaseDn($authSettings['baseDn']);
 		$ldap->configure($settings);
+		$ldap->setDefaultAttributes(self::getAttributeArray($settings['defaults']['attributes']));
 		if(!$authSettings['bind']['anonymous']) {
 			$ldap->bind($authSettings['bind']['dn'], $authSettings['bind']['password']);
 		}
 		return $ldap;
+	}
+
+	/**
+	 * @param string|array $string
+	 * @return array
+	 */
+	protected static function getAttributeArray($string) {
+		if(is_array($string)) {
+			return $string;
+		}
+
+		$attributes = explode(',', $string);
+		foreach($attributes as $key => $value) {
+			$attributes[$key] = $value;
+		}
+		return $attributes;
 	}
 }
