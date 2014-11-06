@@ -18,7 +18,7 @@ class EscapeUtility {
 	 *
 	 * @var string
 	 */
-	protected static $charsToEscape = ',/\\#+<>;"= ';
+	protected static $charsToEscape = ',/\\#+<>;"=';
 
 	/**
 	 * function used for escaping
