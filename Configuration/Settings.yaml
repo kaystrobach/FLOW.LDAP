@@ -1,9 +1,9 @@
 KayStrobach:
   Ldap:
-    host:
-    port:
+    host: ''
+    port: ''
     admin:
-      dn:
-      password:
+      dn: ''
+      password: ''
     defaults:
       attributes: 'dn,uid,givenName,sn,uidNumber,employeeType,mail,ou'
