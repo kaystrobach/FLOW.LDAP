@@ -18,7 +18,7 @@ class EscapeUtility {
 	 *
 	 * @var string
 	 */
-	protected static $charsToEscape = ',/\\#+<>;"=';
+	protected static $charsToEscape = ',/\\#+<>;"=*';
 
 	/**
 	 * function used for escaping
@@ -49,13 +49,19 @@ class EscapeUtility {
 	 */
 	protected static function escapeFallback($string, $ignore = '', $options = NULL) {
 		$escapedString = '';
-		foreach(str_split($string) as $char) {
-			if((strpos(self::$charsToEscape, $char) === FALSE) && (strpos($ignore, $char) === FALSE)) {
-				$escapedString .= $char;
-			} else {
-				$escapedString .= '\\' . $char;
+		$singleChars = str_split($string);
+		if(is_array($singleChars) && (count($singleChars) > 0)) {
+			foreach($singleChars as $char) {
+				if($char !== '') {
+					if((strpos(self::$charsToEscape, $char) === FALSE) && (strpos($ignore, $char) === FALSE)) {
+						$escapedString .= $char;
+					} else {
+						$escapedString .= '\\' . $char;
+					}
+				}
 			}
 		}
+
 
 		return $escapedString;
 	}
