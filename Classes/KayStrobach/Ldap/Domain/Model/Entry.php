@@ -6,7 +6,7 @@
  * Time: 14:57
  */
 
-namespace KayStrobach\Ldap\Service\Ldap;
+namespace KayStrobach\Ldap\Domain\Model;
 
 /**
  * Class LdapEntry
@@ -61,9 +61,11 @@ class Entry {
 	 * @throws \KayStrobach\Ldap\Service\Exception\OperationException
 	 */
 	public function getDn() {
-		$dn = ldap_get_dn($this->ldapConnection->getResource(), $this->entryAsResource);
-		$this->ldapConnection->checkError('getDn');
-		return $dn;
+		if($this->entryAsResource !== FALSE) {
+			$dn = ldap_get_dn($this->ldapConnection->getResource(), $this->entryAsResource);
+			$this->ldapConnection->checkError('getDn');
+			return $dn;
+		}
 	}
 
 	/**

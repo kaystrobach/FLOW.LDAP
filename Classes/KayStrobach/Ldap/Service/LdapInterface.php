@@ -145,7 +145,7 @@ interface LdapInterface
 	 * @param string $field
 	 * @param bool $silentFail
 	 * @throws OperationException
-	 * @return \KayStrobach\Ldap\Service\Ldap\Entry|null
+	 * @return \KayStrobach\Ldap\Domain\Model\Entry|null
 	 */
 	public function getOneObjectByField($value, $field = 'uid', $silentFail = TRUE);
 

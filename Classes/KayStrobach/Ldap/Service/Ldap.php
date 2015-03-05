@@ -9,6 +9,7 @@
 namespace KayStrobach\Ldap\Service;
 
 
+use KayStrobach\Ldap\Domain\Model\Entry;
 use KayStrobach\Ldap\Service\Exception\OperationException;
 use KayStrobach\Ldap\Utility\EscapeUtility;
 use TYPO3\Flow\Annotations as Flow;
@@ -79,7 +80,7 @@ class Ldap implements LdapInterface
 		if($this->ldapResource === FALSE) {
 			throw new OperationException('LDAP Connection failed');
 		}
-		$this->checkError('connect');
+		$this->checkError('connect', $dsn . ':' . $port);
 		ldap_set_option($this->ldapResource, LDAP_OPT_PROTOCOL_VERSION, 3);
 		$this->checkError('protocol 3');
 	}
@@ -140,7 +141,7 @@ class Ldap implements LdapInterface
 		} else {
 			$this->ldapBindStatus = ldap_bind($this->ldapResource);
 		}
-		$this->checkError('bind');
+		$this->checkError('bind', $rdn);
 		return $this->ldapBindStatus;
 	}
 
@@ -228,15 +229,16 @@ class Ldap implements LdapInterface
 	 * convert errors to exceptions
 	 *
 	 * @param $message
+	 * @param string $debug
 	 * @throws OperationException
 	 */
-	public function checkError($message) {
+	public function checkError($message, $debug = '') {
 		$ldapError = ldap_errno($this->ldapResource);
 		if($ldapError !== 0x00) {
-			$exceptionMessage = 'LDAP error: ' . $message . ': ' . ldap_err2str($ldapError);
+			$exceptionMessage = 'LDAP error: ' . $message . ': ' . ldap_err2str($ldapError) . ' ' . $debug;
 			throw new OperationException($exceptionMessage, $ldapError);
 		}
-		$this->systemLogger->log('LDAP-OK: ' . $message, LOG_DEBUG);
+		$this->systemLogger->log('LDAP-OK: ' . $message . ' ' . $debug, LOG_DEBUG);
 	}
 
 	/**
@@ -260,7 +262,7 @@ class Ldap implements LdapInterface
 			$attributes = $this->getDefaultAttributes();
 		}
 		$result = @ldap_search($this->ldapResource, $baseDn, $filter, $attributes, $valuesOnly, $sizeLimit, $timeLimit, $deref);
-		$this->checkError('seach');
+		$this->checkError('search', $filter);
 		return new Ldap\Result($this, $result);
 	}
 
@@ -294,14 +296,14 @@ class Ldap implements LdapInterface
 	 * @param string $field
 	 * @param bool $silentFail
 	 * @throws OperationException
-	 * @return \KayStrobach\Ldap\Service\Ldap\Entry|null
+	 * @return \KayStrobach\Ldap\Domain\Model\Entry|null
 	 */
 	public function getOneObjectByField($value, $field = 'uid', $silentFail = TRUE) {
 		try {
 			$accounts = $this->search(NULL, '(' . $field . '=' . EscapeUtility::escape($value) . ')', $this->getDefaultAttributes());
 			$count = $accounts->count();
+			print_r($accounts->current());
 			if ($count === 1) {
-				$accounts->next();
 				return $accounts->current();
 			} elseif ($count > 1) {
 				if (!$silentFail) {

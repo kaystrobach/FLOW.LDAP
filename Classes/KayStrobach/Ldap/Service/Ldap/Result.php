@@ -8,15 +8,18 @@
 
 namespace KayStrobach\Ldap\Service\Ldap;
 use KayStrobach\Ldap\Service\Exception\OperationException;
+use SebastianBergmann\Exporter\Exception;
 
 /**
  * Class LdapResult
  *
  * has all the ldap handling build in
  *
+ * @todo switch to next_entry handling of ldap stuff
+ *
  * @package KayStrobach\Ldap\Service
  */
-class Result implements \Iterator{
+class Result implements \Iterator {
 	/**
 	 * pointer to the ldap connection
 	 *
@@ -42,12 +45,18 @@ class Result implements \Iterator{
 	protected $entryAsResource = FALSE;
 
 	/**
-	 * @param Ldap $ldapConnection
+	 * @var array
+	 */
+	protected $resultArray = array();
+
+	/**
+	 * @param \KayStrobach\Ldap\Service\Ldap $ldapConnection
 	 * @param resource $ldapResult
 	 */
 	public function __construct($ldapConnection, $ldapResult) {
 		$this->ldapConnection= $ldapConnection;
 		$this->ldapResult = $ldapResult;
+		$this->resultArray = $this->getAllEntriesAsArray();
 	}
 
 	/**
@@ -87,12 +96,10 @@ class Result implements \Iterator{
 	 * (PHP 5 &gt;= 5.0.0)<br/>
 	 * Return the current element
 	 * @link http://php.net/manual/en/iterator.current.php
-	 * @return Entry Can return any type.
+	 * @return array Can return any type.
 	 */
 	public function current() {
-		if($this->entryAsResource !== NULL) {
-			return new Entry($this->ldapConnection, $this->entryAsResource);
-		}
+		return current($this->resultArray);
 	}
 
 	/**
@@ -102,16 +109,7 @@ class Result implements \Iterator{
 	 * @return void Any returned value is ignored.
 	 */
 	public function next() {
-		if($this->position === 0) {
-			$this->entryAsResource = ldap_first_entry($this->ldapConnection->getResource(), $this->ldapResult);
-			$this->ldapConnection->checkError('firstEntry');
-		} else {
-			$this->entryAsResource = ldap_next_entry($this->ldapConnection->getResource(), $this->ldapResult);
-			$this->ldapConnection->checkError('nextEntry');
-		}
-		if($this->valid()) {
-			$this->position++;
-		}
+		next($this->resultArray);
 	}
 
 	/**
@@ -121,7 +119,7 @@ class Result implements \Iterator{
 	 * @return mixed scalar on success, or null on failure.
 	 */
 	public function key() {
-		return $this->position;
+		return key($this->resultArray);
 	}
 
 	/**
@@ -132,11 +130,7 @@ class Result implements \Iterator{
 	 * Returns true on success or false on failure.
 	 */
 	public function valid() {
-		if(is_resource($this->entryAsResource)) {
-			return TRUE;
-		} else {
-			return FALSE;
-		}
+		return current($this->resultArray);
 	}
 
 	/**
@@ -146,7 +140,6 @@ class Result implements \Iterator{
 	 * @return void Any returned value is ignored.
 	 */
 	public function rewind() {
-		$this->position = 0;
-		$this->entryAsResource = FALSE;
+		reset($this->resultArray);
 	}
 }
