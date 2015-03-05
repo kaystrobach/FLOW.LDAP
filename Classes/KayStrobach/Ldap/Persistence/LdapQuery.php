@@ -122,6 +122,7 @@ class LdapQuery implements QueryInterface, \Countable {
 	 */
 	public function setLimit($limit) {
 		$this->limit = $limit;
+		return $this;
 	}
 
 	/**
@@ -144,6 +145,7 @@ class LdapQuery implements QueryInterface, \Countable {
 	 */
 	public function setOffset($offset) {
 		$this->offset = $offset;
+		return $this;
 	}
 
 	/**
@@ -166,6 +168,7 @@ class LdapQuery implements QueryInterface, \Countable {
 	 */
 	public function matching($constraint) {
 		$this->constraint = $constraint;
+		return $this;
 	}
 
 	/**

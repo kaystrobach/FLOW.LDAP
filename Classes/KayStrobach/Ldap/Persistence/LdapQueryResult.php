@@ -28,6 +28,12 @@ class LdapQueryResult implements QueryResultInterface {
 	protected $resultObject;
 
 	/**
+	 * contains the result array
+	 * @var array
+	 */
+	protected $resultArray = array();
+
+	/**
 	 * @param LdapQuery $query
 	 */
 	public function __construct(LdapQuery $query) {
@@ -42,8 +48,17 @@ class LdapQueryResult implements QueryResultInterface {
 	protected function initialize() {
 		if ($this->resultObject === NULL) {
 			$this->resultObject = $this->query->getResult();
+			$this->resultArray = $this->query->getResult()->getAllEntriesAsArray();
+			if($this->query->getLimit()) {
+				$this->resultArray = array_slice(
+					$this->resultArray,
+					(int) $this->query->getOffset(),
+					$this->query->getLimit()
+				);
+			}
 		}
 	}
+
 	/**
 	 * Returns a clone of the query object
 	 *
@@ -60,8 +75,8 @@ class LdapQueryResult implements QueryResultInterface {
 	 */
 	public function getFirst() {
 		$this->initialize();
-		$this->resultObject->rewind();
-		return $this->resultObject->current();
+		reset($this->resultArray);
+		current($this->resultArray);
 	}
 
 	/**
@@ -81,7 +96,7 @@ class LdapQueryResult implements QueryResultInterface {
 	 */
 	public function toArray() {
 		$this->initialize();
-		return $this->resultObject->getAllEntriesAsArray();
+		return $this->resultArray;
 	}
 
 	/**
@@ -99,6 +114,7 @@ class LdapQueryResult implements QueryResultInterface {
 			return FALSE;
 		}
 	}
+
 	/**
 	 * @param mixed $offset
 	 * @return mixed
@@ -107,6 +123,7 @@ class LdapQueryResult implements QueryResultInterface {
 		$this->initialize();
 		return isset($this->resultObject[$offset]) ? $this->resultObject[$offset] : NULL;
 	}
+
 	/**
 	 * This method has no effect on the persisted objects but only on the result set
 	 *
@@ -118,6 +135,7 @@ class LdapQueryResult implements QueryResultInterface {
 		$this->initialize();
 		$this->resultObject[$offset] = $value;
 	}
+
 	/**
 	 * This method has no effect on the persisted objects but only on the result set
 	 *
@@ -128,39 +146,44 @@ class LdapQueryResult implements QueryResultInterface {
 		$this->initialize();
 		unset($this->resultObject[$offset]);
 	}
+
 	/**
 	 * @return mixed
 	 */
 	public function current() {
 		$this->initialize();
-		return $this->resultObject->current();
+		return current($this->resultArray);
 	}
+
 	/**
 	 * @return mixed
 	 */
 	public function key() {
 		$this->initialize();
-		return $this->resultObject->key();
+		return key($this->resultArray);
 	}
+
 	/**
 	 * @return void
 	 */
 	public function next() {
 		$this->initialize();
-		$this->resultObject->next();
+		next($this->resultArray);
 	}
+
 	/**
 	 * @return void
 	 */
 	public function rewind() {
 		$this->initialize();
-		$this->resultObject->rewind();
+		reset($this->resultArray);
 	}
+
 	/**
 	 * @return boolean
 	 */
 	public function valid() {
 		$this->initialize();
-		return $this->resultObject->valid();
+		return (bool) current($this->resultArray);
 	}
 }
