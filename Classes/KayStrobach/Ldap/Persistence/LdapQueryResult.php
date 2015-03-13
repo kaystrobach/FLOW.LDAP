@@ -76,7 +76,7 @@ class LdapQueryResult implements QueryResultInterface {
 	public function getFirst() {
 		$this->initialize();
 		reset($this->resultArray);
-		current($this->resultArray);
+		return current($this->resultArray);
 	}
 
 	/**
