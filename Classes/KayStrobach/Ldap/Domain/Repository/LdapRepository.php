@@ -147,12 +147,17 @@ class LdapRepository implements \TYPO3\Flow\Persistence\RepositoryInterface{
 	/**
 	 * Schedules a modified object for persistence.
 	 *
-	 * @param object $object The modified object
+	 * @param \KayStrobach\Ldap\Domain\Model\Entry $object The modified object
 	 * @return void
 	 * @api
 	 */
 	public function update($object) {
-		// TODO: Implement update() method.
+		$this->ldapConnection->bindAsAdmin();
+		$this->ldapConnection->modify(
+			$object->getDn(),
+			$object->getAsArray()
+		);
+		$this->ldapConnection->unbind();
 	}
 
 	/**
