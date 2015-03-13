@@ -302,7 +302,6 @@ class Ldap implements LdapInterface
 		try {
 			$accounts = $this->search(NULL, '(' . $field . '=' . EscapeUtility::escape($value) . ')', $this->getDefaultAttributes());
 			$count = $accounts->count();
-			print_r($accounts->current());
 			if ($count === 1) {
 				return $accounts->current();
 			} elseif ($count > 1) {
