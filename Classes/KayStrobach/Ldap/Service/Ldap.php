@@ -325,7 +325,7 @@ class Ldap implements LdapInterface
 	 */
 	public function getNextUidNumber($dn = NULL, $argument = 'uidNumber') {
 		$erg = $this->search($dn, $argument . '=*', array($argument));
-		$entries = ldap_get_entries($this->ldapResource, $erg);
+		$entries = $erg->getAllEntriesAsArray();
 		$entry = 0;
 		foreach($entries as $currentEntry) {
 			if(array_key_exists('uidnumber', $currentEntry)) {
