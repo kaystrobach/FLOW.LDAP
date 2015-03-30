@@ -14,7 +14,7 @@ use KayStrobach\Ldap\Service\Exception\OperationException;
  *
  * @package KayStrobach\Ldap\Service
  */
-class Entry {
+class Entry implements \ArrayAccess {
 	/**
 	 * pointer to the ldap connection
 	 *
@@ -99,5 +99,38 @@ class Entry {
 		return $state;
 	}
 
+	/**
+	 * @param mixed $offset
+	 * @param mixed $value
+	 */
+	public function offsetSet($offset, $value) {
+		if (is_null($offset)) {
+			$this->entryAsArray[] = $value;
+		} else {
+			$this->entryAsArray[$offset] = $value;
+		}
+	}
 
+	/**
+	 * @param mixed $offset
+	 * @return bool
+	 */
+	public function offsetExists($offset) {
+		return isset($this->entryAsArray[$offset]);
+	}
+
+	/**
+	 * @param mixed $offset
+	 */
+	public function offsetUnset($offset) {
+		unset($this->entryAsArray[$offset]);
+	}
+
+	/**
+	 * @param mixed $offset
+	 * @return null
+	 */
+	public function offsetGet($offset) {
+		return isset($this->entryAsArray[$offset]) ? $this->entryAsArray[$offset] : null;
+	}
 } 
