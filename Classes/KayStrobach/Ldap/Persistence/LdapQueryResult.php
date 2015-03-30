@@ -8,7 +8,9 @@
 
 namespace KayStrobach\Ldap\Persistence;
 
+use KayStrobach\Ldap\Utility\CleanResultUtility;
 use TYPO3\Flow\Persistence\QueryResultInterface;
+use KayStrobach\Ldap\Domain\Model\Entry;
 use TYPO3\Flow\Annotations as Flow;
 
 class LdapQueryResult implements QueryResultInterface {
@@ -60,6 +62,20 @@ class LdapQueryResult implements QueryResultInterface {
 	}
 
 	/**
+	 * @param $data
+	 * @return Entry
+	 */
+	protected function toEntry($data) {
+		if(is_array($data)) {
+			$cleanedData = CleanResultUtility::stripCountFromArray($data);
+			$entry = new Entry($this->ldapConnection, NULL, $data);
+		} else {
+			$entry = NULL;
+		}
+		return $entry;
+	}
+
+	/**
 	 * Returns a clone of the query object
 	 *
 	 * @return LdapQuery
@@ -71,12 +87,12 @@ class LdapQueryResult implements QueryResultInterface {
 	/**
 	 * Returns the first object in the result set
 	 *
-	 * @return object
+	 * @return Entry
 	 */
 	public function getFirst() {
 		$this->initialize();
 		reset($this->resultArray);
-		return current($this->resultArray);
+		return $this->current();
 	}
 
 	/**
@@ -152,7 +168,8 @@ class LdapQueryResult implements QueryResultInterface {
 	 */
 	public function current() {
 		$this->initialize();
-		return current($this->resultArray);
+		$data = current($this->resultArray);
+		return $this->toEntry($data);
 	}
 
 	/**

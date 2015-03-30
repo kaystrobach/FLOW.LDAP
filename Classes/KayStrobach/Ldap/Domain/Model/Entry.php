@@ -7,6 +7,7 @@
  */
 
 namespace KayStrobach\Ldap\Domain\Model;
+use KayStrobach\Ldap\Service\Exception\OperationException;
 
 /**
  * Class LdapEntry
@@ -61,10 +62,14 @@ class Entry {
 	 * @throws \KayStrobach\Ldap\Service\Exception\OperationException
 	 */
 	public function getDn() {
-		if($this->entryAsResource !== FALSE) {
+		if(is_resource($this->entryAsResource)) {
 			$dn = ldap_get_dn($this->ldapConnection->getResource(), $this->entryAsResource);
 			$this->ldapConnection->checkError('getDn');
 			return $dn;
+		} elseif(array_key_exists('dn', $this->getAsArray())) {
+			return $this->getAsArray()['dn'];
+		} else {
+			throw new OperationException('Can´t detect DN of object');
 		}
 	}
 
