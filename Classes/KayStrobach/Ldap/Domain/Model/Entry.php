@@ -8,6 +8,7 @@
 
 namespace KayStrobach\Ldap\Domain\Model;
 use KayStrobach\Ldap\Service\Exception\OperationException;
+use KayStrobach\Ldap\Utility\CleanResultUtility;
 
 /**
  * Class LdapEntry

@@ -19,6 +19,10 @@ class CleanResultUtility {
 			unset($array['count']);
 		}
 		foreach($array as $key => $value) {
+			if((int)$key == $key) {
+				unset($array['key']);
+				continue;
+			}
 			if(is_array($value)) {
 				$array['key'] = self::stripCountFromArray($value);
 			}

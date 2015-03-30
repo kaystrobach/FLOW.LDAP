@@ -68,7 +68,7 @@ class LdapQueryResult implements QueryResultInterface {
 	protected function toEntry($data) {
 		if(is_array($data)) {
 			$cleanedData = CleanResultUtility::stripCountFromArray($data);
-			$entry = new Entry($this->ldapConnection, NULL, $data);
+			$entry = new Entry($this->ldapConnection, NULL, $cleanedData);
 		} else {
 			$entry = NULL;
 		}

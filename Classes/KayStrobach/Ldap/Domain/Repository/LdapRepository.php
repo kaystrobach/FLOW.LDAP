@@ -10,6 +10,7 @@ namespace KayStrobach\Ldap\Domain\Repository;
 
 
 use KayStrobach\Ldap\Persistence\LdapQuery;
+use KayStrobach\Ldap\Utility\CleanResultUtility;
 use TYPO3\Flow\Annotations as Flow;
 
 /**
@@ -152,10 +153,12 @@ class LdapRepository implements \TYPO3\Flow\Persistence\RepositoryInterface{
 	 * @api
 	 */
 	public function update($object) {
+		/** todo fix that */
+		return ;
 		$this->ldapConnection->bindAsAdmin();
 		$this->ldapConnection->modify(
 			$object->getDn(),
-			$object->getAsArray()
+			CleanResultUtility::stripCountFromArray($object->getAsArray())
 		);
 		$this->ldapConnection->unbind();
 	}
