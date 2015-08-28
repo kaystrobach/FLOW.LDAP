@@ -11,7 +11,8 @@ namespace KayStrobach\Ldap\Persistence;
 use KayStrobach\Ldap\Service\LdapInterface;
 use KayStrobach\Ldap\Utility\EscapeUtility;
 use TYPO3\Flow\Persistence\QueryInterface;
-use TYPO3\Flow\Persistence\QueryResultInterface;
+use TYPO3\Flow\Annotations as Flow;
+
 
 class LdapQuery implements QueryInterface, \Countable {
 	/**
@@ -37,6 +38,16 @@ class LdapQuery implements QueryInterface, \Countable {
 	 */
 	protected $offset;
 
+	/**
+	 * @var array
+	 */
+	protected $attributes = NULL;
+
+	/**
+	 * @var string
+	 * @Flow\Inject(setting="defaults.attributes")
+	 */
+	protected $defaultAttributes;
 
 	/**
 	 * @param LdapInterface $ldapConnection
@@ -80,7 +91,11 @@ class LdapQuery implements QueryInterface, \Countable {
 	 * @return \KayStrobach\Ldap\Service\Ldap\Result
 	 */
 	public function getResult() {
-		return $this->ldapConnection->search(NULL, $this->getConstraint());
+		if($this->getAttributes() === NULL) {
+			return $this->ldapConnection->search(NULL, $this->getConstraint());
+		} else {
+			return $this->ldapConnection->search(NULL, $this->getConstraint(), $this->getAttributes());
+		}
 	}
 
 	/**
@@ -156,6 +171,32 @@ class LdapQuery implements QueryInterface, \Countable {
 	 */
 	public function getOffset() {
 		return $this->offset;
+	}
+
+	/**
+	 * @return array
+	 */
+	public function getAttributes() {
+		if($this->attributes === NULL) {
+			return NULL;
+		}
+		$attributes = array_unique(
+			array_merge(
+				$this->attributes,
+				explode(',', $this->defaultAttributes)
+			)
+		);
+		return $attributes;
+	}
+
+	/**
+	 * @param array $attributes
+	 */
+	public function setAttributes($attributes) {
+		if (!is_array($attributes)) {
+			$attributes = explode(',', $attributes);
+		}
+		$this->attributes = $attributes;
 	}
 
 	/**

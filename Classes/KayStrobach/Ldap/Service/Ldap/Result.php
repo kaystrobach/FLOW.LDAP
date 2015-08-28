@@ -85,6 +85,7 @@ class Result implements \Iterator {
 	 * @return array
 	 */
 	public function getAllEntriesAsArray() {
+		$this->ldapConnection->checkError('beforeGetAllEntries');
 		$entries = ldap_get_entries($this->ldapConnection->getResource(), $this->ldapResult);
 		$this->ldapConnection->checkError('getAllEntries');
 		// remove the index 0, as it just contains the count

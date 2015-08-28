@@ -6,4 +6,4 @@ KayStrobach:
       dn: ''
       password: ''
     defaults:
-      attributes: 'dn,uid,givenName,sn,uidNumber,employeeType,mail,ou'
+      attributes: 'dn,uid,givenName,sn,uidNumber,employeeType,mail,ou,userPassword,employeeNumber'

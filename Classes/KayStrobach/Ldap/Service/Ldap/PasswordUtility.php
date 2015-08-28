@@ -14,6 +14,20 @@ namespace KayStrobach\Ldap\Service\Ldap;
  * @package KayStrobach\Ldap\Service\Ldap
  */
 class PasswordUtility {
+	public static $algorithms = array(
+		'MD4',
+		'MD5',
+		'SMD5',
+		'NTLM',
+		'SHA',
+		'SSHA',
+		'SHA256',
+		'SSHA256',
+		'SHA384',
+		'SSHA384',
+		'SHA512',
+		'SSHA512'
+	);
 	/**
 	 * creates an array with preencrypted password inside to easily use the modify function without hassling with
 	 * the f*** encryption stuff
@@ -37,22 +51,65 @@ class PasswordUtility {
 	 * @return array
 	 */
 	public static function getPasswordArray($password) {
-		$passwords = array(
-			'{MD4}' . base64_encode(pack( "H*", hash('md4', $password))),
-			'{MD5}' . base64_encode(pack( "H*", md5($password))),
-			'{SMD5}' . self::saltedHash('md5', $password),
-			'{NTLM}' . base64_encode(hash('md4', self::utf8ToUtf16le($password), TRUE)),
-			'{SHA}' . base64_encode(sha1($password, TRUE)),
-			'{SSHA}' . self::ssha($password),
-			'{SHA256}' . base64_encode(hash('sha256', $password, TRUE)),
-			'{SSHA256}' . self::saltedHash('sha256', $password),
-			'{SHA384}' . base64_encode(hash('sha384', $password, TRUE)),
-			'{SSHA384}' . self::saltedHash('sha384', $password),
-			'{SHA512}' . base64_encode(hash('sha512', $password, TRUE)),
-			'{SSHA512}' . self::saltedHash('sha512', $password),
-		);
-		// add some blowfish passwords if needed
+		$passwords = array();
+		foreach(self::$algorithms as $algorithm) {
+			$hashFunctionName = 'hash' . strtolower(ucfirst($algorithm));
+			if(method_exists(__CLASS__, $hashFunctionName)) {
+				 $hashedPassword = call_user_func(
+					array(__CLASS__, $hashFunctionName),
+					$password
+				);
+				$passwords[] = base64_encode($hashedPassword);
+			}
+		}
 		return $passwords;
+	}
+
+	public static function hashMd4($password) {
+		return pack( "H*", hash('md4', $password));
+	}
+
+	public static function hashMd5($password) {
+		return pack( "H*", md5($password));
+	}
+
+	public static function hashSmd5($password) {
+		return self::saltedHash('md5', $password);
+	}
+	public static function hashNtlm($password) {
+		return self::hashMd4(self::utf8ToUtf16le($password));
+	}
+
+	public static function hashSha($password) {
+		return sha1($password, TRUE);
+	}
+
+	public static function hashSsha($password) {
+		self::ssha($password);
+	}
+
+	public static function hashSha256($password) {
+		return hash('sha256', $password, TRUE);
+	}
+
+	public static function hashSsha256($password) {
+		return self::saltedHash('sha256', $password);
+	}
+
+	public static function hashSha384($password) {
+		return hash('sha384', $password, TRUE);
+	}
+
+	public static function hashSsha384($password) {
+		return self::saltedHash('sha384', $password);
+	}
+
+	public static function hashSha512($password) {
+		return hash('sha512', $password, TRUE);
+	}
+
+	public static function hashSsha512($password) {
+		return self::saltedHash('sha512', $password);
 	}
 
 	/**
@@ -65,13 +122,17 @@ class PasswordUtility {
 		return iconv('UTF-8', 'UTF-16LE', $string);
 	}
 
-	protected static function saltedHash($algorithm, $password) {
-		$salt = self::generateSalt(10);
+	protected static function saltedHash($algorithm, $password, $salt = NULL) {
+		if($salt === NULL) {
+			$salt = self::generateSalt(10);
+		}
 		return base64_encode(pack("H*", hash($algorithm, $password . $salt)) . $salt);
 	}
 
-	protected static function ssha($string) {
-		$salt = self::generateSalt(10);
+	protected static function ssha($string, $salt = NULL) {
+		if($salt === NULL) {
+			$salt = self::generateSalt(10);
+		}
 		return base64_encode(pack("H*", sha1($string . $salt)) . $salt);
 	}
 

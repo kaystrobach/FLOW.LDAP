@@ -29,6 +29,21 @@ class Ldap implements LdapInterface
 	protected $ldapResource;
 
 	/**
+	 * ldap dsn
+	 *
+	 * @var string
+	 */
+	protected $dsn;
+
+
+	/**
+	 * ldap port
+	 *
+	 * @var string
+	 */
+	protected $port;
+
+	/**
 	 * Saves the ldap bind status
 	 *
 	 * @var bool
@@ -72,6 +87,9 @@ class Ldap implements LdapInterface
 	 * @throws OperationException
 	 */
 	public function connect($dsn, $port = NULL) {
+		$this->dsn = $dsn;
+		$this->port = $port;
+
 		if($port !== NULL) {
 			$this->ldapResource = ldap_connect($dsn, $port);
 		} else {
@@ -135,13 +153,13 @@ class Ldap implements LdapInterface
 	 * @throws OperationException
 	 */
 	public function bind($rdn = NULL, $password = NULL) {
-		$this->checkConnection();
 		if(($rdn !== NULL) && ($password !== NULL)) {
-			$this->ldapBindStatus = ldap_bind($this->ldapResource, $rdn, $password);
+			$this->ldapBindStatus = @ldap_bind($this->ldapResource, $rdn, $password);
 		} else {
-			$this->ldapBindStatus = ldap_bind($this->ldapResource);
+			$this->ldapBindStatus = @ldap_bind($this->ldapResource);
 		}
-		$this->checkError('bind', $rdn);
+
+		$this->checkError('bind', $this->dsn . ' / '. $this->port . ' / '. $rdn);
 		return $this->ldapBindStatus;
 	}
 
@@ -261,6 +279,7 @@ class Ldap implements LdapInterface
 		if($attributes === NULL) {
 			$attributes = $this->getDefaultAttributes();
 		}
+
 		$result = @ldap_search($this->ldapResource, $baseDn, $filter, $attributes, $valuesOnly, $sizeLimit, $timeLimit, $deref);
 		$this->checkError('search', $filter);
 		return new Ldap\Result($this, $result);
