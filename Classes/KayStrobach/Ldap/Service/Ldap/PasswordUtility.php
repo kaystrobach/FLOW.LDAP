@@ -59,7 +59,7 @@ class PasswordUtility {
 					array(__CLASS__, $hashFunctionName),
 					$password
 				);
-				$passwords[] = base64_encode($hashedPassword);
+				$passwords[] = '{' . $algorithm . '}' . base64_encode($hashedPassword);
 			}
 		}
 		return $passwords;
