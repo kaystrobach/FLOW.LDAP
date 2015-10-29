@@ -91,15 +91,15 @@ class Ldap implements LdapInterface
 		$this->port = $port;
 
 		if($port !== NULL) {
-			$this->ldapResource = ldap_connect($dsn, $port);
+			$this->ldapResource = @ldap_connect($dsn, $port);
 		} else {
-			$this->ldapResource = ldap_connect($dsn);
+			$this->ldapResource = @ldap_connect($dsn);
 		}
 		if($this->ldapResource === FALSE) {
 			throw new OperationException('LDAP Connection failed');
 		}
 		$this->checkError('connect', $dsn . ':' . $port);
-		ldap_set_option($this->ldapResource, LDAP_OPT_PROTOCOL_VERSION, 3);
+		@ldap_set_option($this->ldapResource, LDAP_OPT_PROTOCOL_VERSION, 3);
 		$this->checkError('protocol 3');
 	}
 
@@ -170,7 +170,7 @@ class Ldap implements LdapInterface
 	 */
 	public function unbind() {
 		if((is_resource($this->ldapResource)) && ($this->ldapBindStatus !== FALSE)) {
-			ldap_unbind($this->ldapResource);
+			@ldap_unbind($this->ldapResource);
 			$this->ldapBindStatus = FALSE;
 		}
 	}
@@ -205,12 +205,12 @@ class Ldap implements LdapInterface
 	 */
 	public function add($dn, $entry) {
 		$this->checkConnection();
-		ldap_add($this->ldapResource, $dn, $entry);
+		@ldap_add($this->ldapResource, $dn, $entry);
 		$this->checkError('add ' . $dn);
 	}
 
 	public function delete($dn) {
-		ldap_delete($this->ldapResource, $dn);
+		@ldap_delete($this->ldapResource, $dn);
 		$this->checkError('delete ' . $dn);
 	}
 
@@ -222,7 +222,7 @@ class Ldap implements LdapInterface
 	 */
 	public function modify($dn, $entry) {
 		$this->checkConnection();
-		ldap_modify($this->ldapResource, $dn, $entry);
+		@ldap_modify($this->ldapResource, $dn, $entry);
 		$this->checkError('modify ' . $dn);
 	}
 
@@ -236,7 +236,7 @@ class Ldap implements LdapInterface
 	public function modifyBatch($dn, $entry) {
 		$this->checkConnection();
 		if(function_exists('ldap_modify_batch')) {
-			ldap_modify_batch($this->ldapResource, $dn, $entry);
+			@ldap_modify_batch($this->ldapResource, $dn, $entry);
 			$this->checkError('modify batch ' . $dn);
 		} else {
 			throw new OperationException('function ldap_modify_batch is missing');
