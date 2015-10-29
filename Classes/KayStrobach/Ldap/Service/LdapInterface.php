@@ -85,6 +85,12 @@ interface LdapInterface
 	 */
 	public function add($dn, $entry);
 
+	/**
+	 * Deletes an object by dn
+	 *
+	 * @param $dn
+	 * @return mixed
+	 */
 	public function delete($dn);
 
 	/**
