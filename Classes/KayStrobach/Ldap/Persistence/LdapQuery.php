@@ -393,4 +393,25 @@ class LdapQuery implements QueryInterface, \Countable {
 	public function greaterThanOrEqual($propertyName, $operand) {
 		return '(' . $propertyName . '>=' . EscapeUtility::escape($operand) . ')';
 	}
+
+	/**
+	 * Sets the DISTINCT flag for this query.
+	 *
+	 * @param boolean $distinct
+	 * @return \TYPO3\Flow\Persistence\QueryInterface
+	 * @api
+	 */
+	public function setDistinct($distinct = true)  {
+		throw new \BadMethodCallException('This method is not implemented in this query implementation.');
+	}
+
+	/**
+	 * Returns the DISTINCT flag for this query.
+	 *
+	 * @return boolean
+	 * @api
+	 */
+	public function isDistinct() {
+		throw new \BadMethodCallException('This method is not implemented in this query implementation.');
+	}
 }
