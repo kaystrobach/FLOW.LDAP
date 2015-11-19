@@ -74,11 +74,15 @@ class LdapRepository implements \TYPO3\Flow\Persistence\RepositoryInterface{
 	/**
 	 * Returns all objects of this repository.
 	 *
+	 * @param string $fields
+	 *
 	 * @return \TYPO3\Flow\Persistence\QueryResultInterface The query result
 	 * @api
 	 */
-	public function findAll() {
+	public function findAll($fields = '') {
+		/** @var LdapQuery $query */
 		$query = $this->createQuery();
+		$query->setAttributes($fields);
 		$query->matching('(cn=*)');
 		return $query->execute();
 	}
